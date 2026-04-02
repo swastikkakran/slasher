@@ -384,7 +384,6 @@ ACCESS_TOKEN_EXPIRY=15m
 REFRESH_TOKEN_SECRET=<different random 256-bit secret>
 REFRESH_TOKEN_EXPIRY=7d
 BASE_URL=https://yourdomain.com   # used to construct shortUrl in responses
-NODE_ENV=development
 ```
 
 ---
@@ -393,7 +392,7 @@ NODE_ENV=development
 
 ```
 src/
-├── config/
+├── db/
 │   └── db.js                  # MongoDB connection
 ├── controllers/
 │   ├── auth.controller.js
@@ -411,7 +410,7 @@ src/
 │   ├── auth.routes.js
 │   ├── url.routes.js
 │   └── redirect.routes.js
-├── utils/
+├── utilities/
 │   ├── asyncHandler.js
 │   ├── ApiError.js            # custom error class
 │   ├── ApiResponse.js         # consistent response wrapper
