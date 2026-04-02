@@ -1,5 +1,7 @@
 import express, { json, urlencoded } from "express";
 import cors from "cors";
+//route imports
+import healthCheckRouter from "./routes/healthcheck.route.js"
 
 const app = express();
 
@@ -11,6 +13,9 @@ app.use(urlencoded({extended: true, limit: "16kb" }))
 app.use(cors())
 
 app.get("/", (req, res) => {res.send("welcome!")})
+
+//healthcheck router
+app.use("/healthcheck", healthCheckRouter)
 
 
 app.use((err, req, res, next) => {
