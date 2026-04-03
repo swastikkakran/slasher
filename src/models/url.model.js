@@ -29,4 +29,6 @@ const urlSchema = new Schema({
     }
 }, { timestamps: true })
 
+urlSchema.index({ shortCode: 1 }, { unique: true });
+
 export const urlModel = mongoose.model("Url", urlSchema);
