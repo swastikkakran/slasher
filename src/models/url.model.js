@@ -7,15 +7,17 @@ const urlSchema = new Schema({
     },
     shortCode: {
         type: String,
-        unique: true,
+        index: true,
         required: true
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true,
+        index: true
     },
     clicks: {
-        Type: Number,
+        type: Number,
         default: 0
     },
     isActive: {

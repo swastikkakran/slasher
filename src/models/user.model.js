@@ -19,7 +19,7 @@ const userSchema = new Schema({
         index: true,
         required: true
     },
-    passowrd: {
+    password: {
         type: String,
         required: true
     }
@@ -27,16 +27,16 @@ const userSchema = new Schema({
 
 
 //pre hooks
-userSchema.pre("save", async function () {
-    if (!this.isModified("passowrd")) return;
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
 
-    this.passowrd = bcrypt.hash(this.passowrd, 10)
+    this.passowrd = await bcrypt.hash(this.password, 10)
 })
 
 
 //schema methods
 userSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.passowrd)
+    return await bcrypt.compare(password, this.password)
 }
 
 userSchema.methods.generateAccessToken = function () {
