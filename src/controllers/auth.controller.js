@@ -8,12 +8,9 @@ import bcrypt from "bcrypt";
 const generateAccessAndRefreshToken = async function(userId) {
     try {
         const user = await userModel.findById(userId)
-    
-        if (!user) {
-            throw new ApiError(404, "user not found!", [])
-        }
         const accessToken = await user.generateAccessToken()
         const refreshToken = await user.generateRefreshToken()
+
         const hashedToken = await bcrypt.hash(refreshToken, 10)
         const tokenDoc = await tokenModel.create({
             token: hashedToken,
@@ -22,7 +19,7 @@ const generateAccessAndRefreshToken = async function(userId) {
         })
         return { accessToken, refreshToken }
     } catch (error) {
-        throw new ApiError(500, "Error generating tokens,")
+        throw new ApiError(500, "Error generating tokens")
     }
 }
 
