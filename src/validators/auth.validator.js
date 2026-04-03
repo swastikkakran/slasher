@@ -15,4 +15,13 @@ const registerSchema = z.object({
         .regex(/^(?=.*[A-Z])(?=.*\d).+$/, "Password must contain at least 1 uppercase letter and 1 number")
 });
 
-export { registerSchema }
+const loginSchema = z.object({
+    identifier: z
+        .string()
+        .min(1, "Email or username is required"),
+    password: z
+        .string()
+        .min(1, "Password is required")
+});
+
+export { registerSchema, loginSchema }
