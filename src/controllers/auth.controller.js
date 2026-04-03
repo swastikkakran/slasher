@@ -18,7 +18,7 @@ const generateAccessAndRefreshToken = async function(userId) {
         const tokenDoc = await tokenModel.create({
             token: hashedToken,
             userId: user._id,
-            expiresAt: (1000*60*60*24*7) + Date.now()
+            expiresAt: new Date((1000*60*60*24*7) + Date.now())
         })
         return { accessToken, refreshToken }
     } catch (error) {
@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async function (req, res) {
     const { username, email, password } = req.body
 
     //checking if user exists
-    isUserAlreadyPresent = userModel.findOne({ $or: [{ username: username }, {email: email}] })
+    const isUserAlreadyPresent = await userModel.findOne({ $or: [{ username: username }, {email: email}] })
 
     if (isUserAlreadyPresent) {
         throw new ApiError(409, "username or email already exists!")
@@ -82,7 +82,7 @@ const loginUser = asyncHandler(async function(req, res) {
 
     //preparing user data to send over json
     const loggedUser = existingUser.toObject()
-    delete loggedUser.passowrd
+    delete loggedUser.password
 
     return res
         .status(200)
