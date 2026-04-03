@@ -58,5 +58,45 @@ const registerUser = asyncHandler(async function (req, res) {
 })
 
 
+const loginUser = asyncHandler(async function(req, res) {
+    const { identifier, password } = req.body
 
-export {registerUser}
+    //checking if user exists
+    const existingUser = await userModel.findOne({
+        $or: [{email: identifier}, {username: identifier}]
+    })
+
+    if (!existingUser) {
+        throw new ApiError(401, "invalid credentials!", [])
+    }
+
+    //checking password
+    const validPassword = await existingUser.isPasswordCorrect(password)
+
+    if (!validPassword) {
+        throw new ApiError(401, "invalid credentials!", [])
+    }
+
+    //generating tokens
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(existingUser._id)
+
+    //preparing user data to send over json
+    const loggedUser = existingUser.toObject()
+    delete loggedUser.passowrd
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200,
+            {
+                success: true,
+                data: {
+                    "accessToken": accessToken,
+                    "refreshToken": refreshToken
+                },
+                user: loggedUser
+            },
+            "user logged in successfully!")
+        )
+})
+
+export { registerUser, loginUser }
