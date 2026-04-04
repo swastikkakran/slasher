@@ -157,7 +157,8 @@ Exchange a valid refresh token for a new access token.
 {
   "success": true,
   "data": {
-    "accessToken": "<new jwt>"
+    "accessToken": "<new jwt>",
+    "refreshToken": "<new jwt>"
   }
 }
 ```
