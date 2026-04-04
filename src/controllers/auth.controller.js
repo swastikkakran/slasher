@@ -100,24 +100,9 @@ const loginUser = asyncHandler(async function(req, res) {
 
 const refreshUser = asyncHandler(async function (req, res) {
     
-    const oldToken = req.body.refreshToken
-    if(!oldToken) throw new ApiError(401, "missing token!")
-
-    //checking cryptographic authenticity and expiry of token
-    let decode;
-    try {
-        decode = jwt.verify(oldToken, process.env.REFRESH_TOKEN_SECRET)
-    } catch (error) {
-        if (error.name === "TokenExpiredError") throw new ApiError(401, "expired refresh token!")
-        throw new ApiError(401, "invalid refresh token!")
-    }
-
-    //checking if token is present in DB or not
-    const oldHashedToken = crypto.createHash("sha256").update(oldToken).digest("hex")
-    const isTokenPresent = await tokenModel.findOne({ token: oldHashedToken })
-    if (!isTokenPresent) throw new ApiError(401, "Token has been revoked!")
-
-    await tokenModel.findByIdAndDelete(isTokenPresent._id)
+    const existingToken = req.token
+    const decode = req.decodedToken
+    await tokenModel.findByIdAndDelete(existingToken._id)
 
     //assigning new tokens
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(decode._id)
