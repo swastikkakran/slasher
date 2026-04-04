@@ -117,4 +117,15 @@ const refreshUser = asyncHandler(async function (req, res) {
 
 })
 
-export { registerUser, loginUser, refreshUser }
+
+const logoutUser = asyncHandler(async function (req, res) {
+    
+    const token = req.token;
+    await tokenModel.findByIdAndDelete(token._id)
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { "success": true }, "user logged out successfully!"))
+})
+
+export { registerUser, loginUser, refreshUser, logoutUser }
