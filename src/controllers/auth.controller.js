@@ -1,9 +1,10 @@
 import { ApiResponse } from "../utilities/api-response.js";
 import { ApiError } from "../utilities/api-error.js";
 import { asyncHandler } from "../utilities/async-handler.js";
-import { userModel } from "../models/user.model.js"
-import { tokenModel } from "../models/token.model.js"
-import bcrypt from "bcrypt";
+import { userModel } from "../models/user.model.js";
+import { tokenModel } from "../models/token.model.js";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const generateAccessAndRefreshToken = async function(userId) {
     try {
@@ -11,7 +12,7 @@ const generateAccessAndRefreshToken = async function(userId) {
         const accessToken = await user.generateAccessToken()
         const refreshToken = await user.generateRefreshToken()
 
-        const hashedToken = await bcrypt.hash(refreshToken, 10)
+        const hashedToken = crypto.createHash("sha256").update(refreshToken).digest("hex")
         const tokenDoc = await tokenModel.create({
             token: hashedToken,
             userId: user._id,
@@ -96,4 +97,39 @@ const loginUser = asyncHandler(async function(req, res) {
         )
 })
 
-export { registerUser, loginUser }
+
+const refreshUser = asyncHandler(async function (req, res) {
+    
+    const oldToken = req.body.refreshToken
+    if(!oldToken) throw new ApiError(401, "missing token!")
+
+    //checking cryptographic authenticity and expiry of token
+    let decode;
+    try {
+        decode = jwt.verify(oldToken, process.env.REFRESH_TOKEN_SECRET)
+    } catch (error) {
+        if (error.name === "TokenExpiredError") throw new ApiError(401, "expired refresh token!")
+        throw new ApiError(401, "invalid refresh token!")
+    }
+
+    //checking if token is present in DB or not
+    const oldHashedToken = crypto.createHash("sha256").update(oldToken).digest("hex")
+    const isTokenPresent = await tokenModel.findOne({ token: oldHashedToken })
+    if (!isTokenPresent) throw new ApiError(401, "Token has been revoked!")
+
+    await tokenModel.findByIdAndDelete(isTokenPresent._id)
+
+    //assigning new tokens
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(decode._id)
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {
+            success: true,
+            "accessToken": accessToken,
+            "refreshToken": refreshToken
+        }))
+
+})
+
+export { registerUser, loginUser, refreshUser }
