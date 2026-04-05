@@ -191,7 +191,7 @@ Exchange a valid refresh token for a new access token.
 
 ### 4.2 URL Shortening
 
-#### `POST /api/v1/shorten`
+#### `POST /api/v1/urls/shorten`
 
 🔒 Protected. Create a short URL.
 
