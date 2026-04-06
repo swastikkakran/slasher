@@ -4,6 +4,8 @@ import cors from "cors";
 import healthCheckRouter from "./routes/healthcheck.route.js"
 import authRouter from "./routes/auth.route.js"
 import urlRouter from "./routes/url.route.js"
+//redirect controller
+import { redirect } from "./controllers/redirect.controller.js";
 
 const app = express();
 
@@ -15,6 +17,9 @@ app.use(urlencoded({extended: true, limit: "16kb" }))
 app.use(cors())
 
 app.get("/", (req, res) => {res.send("welcome!")})
+
+//redirect route
+app.get("/:shortCode", redirect)
 
 //healthcheck routes
 app.use("/healthcheck", healthCheckRouter)

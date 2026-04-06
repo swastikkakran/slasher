@@ -2,7 +2,7 @@ import { ApiError } from "../utilities/api-error.js";
 import { asyncHandler } from "../utilities/async-handler.js";
 import { urlModel } from "../models/url.model.js";
 
-const redirect = asyncHandler(async function (req, res) {
+export const redirect = asyncHandler(async function (req, res) {
     
     const shortCode = req.params.shortCode
 
