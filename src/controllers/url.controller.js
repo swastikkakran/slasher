@@ -111,4 +111,16 @@ const updateUrl = asyncHandler(async function (req, res) {
     
 })
 
-export { shortenUrl, getUrls, getSingleUrl, updateUrl }
+
+const deleteUrl = asyncHandler(async function (req, res) {
+
+    const deletedUrl = await urlModel.findOneAndDelete({ shortCode: req.params.shortCode, owner: req.body.user._id })
+    if (!deletedUrl) throw new ApiError(404, "URL not found!")
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, { success: true }, "Url deleted Successfully"))
+
+})
+
+export { shortenUrl, getUrls, getSingleUrl, updateUrl, deleteUrl }
