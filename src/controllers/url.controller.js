@@ -69,4 +69,20 @@ const getUrls = asyncHandler(async function (req, res) {
 
 })
 
-export { shortenUrl, getUrls }
+
+const getSingleUrl = asyncHandler(async function (req, res) {
+    
+    const url = await urlModel.findOne({ owner: req.user._id, shortCode: req.params.shortCode })
+    if (!url) throw new ApiError(404, "URL not found!")
+
+    return res
+        .status(200)
+        .json(new ApiResponse((200), {
+            data: {
+                url: url
+            },
+            "success": true
+        }))
+})
+
+export { shortenUrl, getUrls, getSingleUrl }
