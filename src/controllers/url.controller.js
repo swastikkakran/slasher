@@ -46,7 +46,7 @@ const shortenUrl = asyncHandler(async function (req, res) {
 
 const getUrls = asyncHandler(async function (req, res) {
 
-    const page = parseInt(req.query.page)
+    const page = parseInt(req.query.page) || 1
     const limit = Math.min(parseInt(req.query.limit) || 10, 50)
     const skip = (page - 1)*limit
     const sort = req.query.sort || "createdAt"
@@ -114,7 +114,7 @@ const updateUrl = asyncHandler(async function (req, res) {
 
 const deleteUrl = asyncHandler(async function (req, res) {
 
-    const deletedUrl = await urlModel.findOneAndDelete({ shortCode: req.params.shortCode, owner: req.body.user._id })
+    const deletedUrl = await urlModel.findOneAndDelete({ shortCode: req.params.shortCode, owner: req.user._id })
     if (!deletedUrl) throw new ApiError(404, "URL not found!")
 
     return res

@@ -18,9 +18,6 @@ app.use(cors())
 
 app.get("/", (req, res) => {res.send("welcome!")})
 
-//redirect route
-app.get("/:shortCode", redirect)
-
 //healthcheck routes
 app.use("/healthcheck", healthCheckRouter)
 
@@ -28,7 +25,10 @@ app.use("/healthcheck", healthCheckRouter)
 app.use("/api/v1/auth", authRouter)
 
 //url routes
-app.use("api/v1/urls", urlRouter)
+app.use("/api/v1/urls", urlRouter)
+
+//redirect route
+app.get("/:shortCode", redirect)
 
 
 app.use((err, req, res, next) => {
