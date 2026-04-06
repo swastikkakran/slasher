@@ -85,4 +85,30 @@ const getSingleUrl = asyncHandler(async function (req, res) {
         }))
 })
 
-export { shortenUrl, getUrls, getSingleUrl }
+
+const updateUrl = asyncHandler(async function (req, res) {
+
+    const { isActive, expiresAt } = req.body
+    let updates = {}
+    if (isActive !== undefined) updates.isActive = isActive
+    if (expiresAt !== undefined) updates.expiresAt = new Date(expiresAt)
+        
+        const updatedUrl = await urlModel.findOneAndUpdate(
+            { owner: req.user._id, shortCode: req.params.shortCode },
+            { $set: updates },
+            { new: true }
+        )
+    if (!updatedUrl) throw new ApiError(404, "URL not found!")
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {
+            data: {
+                updateUrl: updatedUrl
+            },
+            "success": true
+        }))
+    
+})
+
+export { shortenUrl, getUrls, getSingleUrl, updateUrl }
