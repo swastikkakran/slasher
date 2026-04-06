@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { registerUser, loginUser, refreshUser, logoutUser } from "../controllers/auth.controller.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
-import { verify_refresh_JWT } from "../middlewares/refresh-jwt.middleware.js";
+import { verify_refresh_JWT } from "../middlewares/auth.middleware.js";
 import { registerSchema, loginSchema } from "../validators/auth.validator.js";
 
 const router = Router();
