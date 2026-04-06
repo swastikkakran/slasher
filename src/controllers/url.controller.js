@@ -43,4 +43,30 @@ const shortenUrl = asyncHandler(async function (req, res) {
         }))
 })
 
-export { shortenUrl }
+
+const getUrls = asyncHandler(async function (req, res) {
+
+    const page = parseInt(req.query.page)
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50)
+    const skip = (page - 1)*limit
+    const sort = req.query.sort || "createdAt"
+    const order = req.query.order === "asc" ? 1 : -1
+
+    const urls = await urlModel.find({ owner: req.user._id }).sort({ [sort]: order }).limit(limit).skip(skip)
+    const totalDocs = await urlModel.countDocuments({ owner: req.user._id })
+
+    const totalPages = Math.ceil(totalDocs/limit)
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {
+            data: {
+                urls: urls,
+                pagination: { total: totalDocs, page: page, limit: limit, totalPages: totalPages }
+            },
+            "success": true
+        }))
+
+})
+
+export { shortenUrl, getUrls }
